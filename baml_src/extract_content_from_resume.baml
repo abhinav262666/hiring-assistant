@@ -7,7 +7,7 @@ class Resume {
 
 
 function ExtractResume(resume: string) -> Resume {
-  client "openai-responses/gpt-5-mini" 
+  client "openai-responses/gpt-5-mini"
   prompt #"
     Extract from this content:
     {{ resume }}

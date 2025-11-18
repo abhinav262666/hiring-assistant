@@ -1,9 +1,10 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from settings import senv
+
+from fastapi import FastAPI
 
 # Import routers from endpoints
 from endpoints import router as api_router
+from settings import senv
 
 
 @asynccontextmanager
@@ -26,7 +27,7 @@ app = FastAPI(
     title="Hiring Assistant API",
     description="Backend API for the Hiring Assistant system",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Include API routers
@@ -45,10 +46,5 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

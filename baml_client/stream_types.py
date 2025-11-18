@@ -11,26 +11,29 @@
 # baml-cli is available with the baml package.
 
 import typing
+
 import typing_extensions
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-import baml_py
+StreamStateValueT = typing.TypeVar("StreamStateValueT")
 
-from . import types
 
-StreamStateValueT = typing.TypeVar('StreamStateValueT')
 class StreamState(BaseModel, typing.Generic[StreamStateValueT]):
     value: StreamStateValueT
     state: typing_extensions.Literal["Pending", "Incomplete", "Complete"]
+
+
 # #########################################################################
 # Generated classes (1)
 # #########################################################################
+
 
 class Resume(BaseModel):
     name: typing.Optional[str] = None
     email: typing.Optional[str] = None
     experience: typing.List[str]
     skills: typing.List[str]
+
 
 # #########################################################################
 # Generated type aliases (0)

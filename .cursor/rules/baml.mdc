@@ -15,17 +15,17 @@ alwaysApply: false
       // Optional string fields use ?
       // @description is optional, but if you include it, it goes after the field.
       name string? @description("The name of the object")
-      
+
       // Arrays of primitives
       // arrays cannot be optional.
       tags string[]
-      
+
       // Enums must be declared separately and are optional
       status MyEnum?
-      
+
       // Union types
       type "success" | "error"
-      
+
       // Primitive types
       count int
       enabled bool
@@ -66,7 +66,7 @@ alwaysApply: false
       // prompt with jinja syntax inside here. with double curly braces for variables.
       // make sure to include: \{\{ ctx.output_format \}\} in the prompt, which prints the output schema instructions so the LLM returns the output in the correct format (json or string, etc.). DO NOT write the output schema manually.
       prompt #"
-        
+
       "#
     }
 
@@ -148,21 +148,21 @@ alwaysApply: false
 
     <ClientTypes>
       BAML provides both synchronous and asynchronous clients:
-      
+
       ```python
       from baml_client import b  # Synchronous client
       from baml_client.async_client import b as async_b  # Asynchronous client
-      
+
       # Synchronous call
       result = b.MyFunction(input_data)
-      
-      # Asynchronous call  
+
+      # Asynchronous call
       result = await async_b.MyFunction(input_data)
       ```
 
       ```typescript
       import { b } from './baml_client'  // Async client (default)
-      
+
       // All calls are async in TypeScript
       const result = await b.MyFunction(inputData)
       ```
@@ -170,11 +170,11 @@ alwaysApply: false
 
     <Configuration>
       You can configure client behavior using with_options():
-      
+
       ```python
       from baml_client import b
       from baml_client.types import ClientOptions
-      
+
       # Override default client settings
       result = b.MyFunction.with_options(
           client_options=ClientOptions(
@@ -187,7 +187,7 @@ alwaysApply: false
 
       ```typescript
       import { b } from './baml_client'
-      
+
       const result = await b.MyFunction.withOptions({
           clientOptions: {
               maxRetries: 3,
@@ -200,14 +200,14 @@ alwaysApply: false
 
     <ErrorHandling>
       BAML provides specific error types for better error handling:
-      
+
       ```python
       from baml_client import b
       from baml_client.errors import (
           BamlValidationError,
           BamlClientFinishReasonError
       )
-      
+
       try:
           result = b.MyFunction(input_data)
       except BamlValidationError as e:
@@ -221,10 +221,10 @@ alwaysApply: false
 
     <Streaming>
       For functions that support streaming, use the stream methods:
-      
+
       ```python
       from baml_client import b
-      
+
       # Streaming in Python
       for chunk in b.MyStreamingFunction.stream(input_data):
           print(chunk)
@@ -232,7 +232,7 @@ alwaysApply: false
 
       ```typescript
       import { b } from './baml_client'
-      
+
       // Streaming in TypeScript
       const stream = b.MyStreamingFunction.stream(inputData)
       for await (const chunk of stream) {
@@ -243,49 +243,49 @@ alwaysApply: false
 
     <MediaHandling>
       BAML supports various media types (images, audio, PDFs, videos):
-      
+
       ```python
       from baml_client import b
       from baml_client.types import BamlImage, BamlAudio, BamlPdf
-      
+
       # Handle images
       image = BamlImage.from_path("./image.jpg")
       # or from URL
       image = BamlImage.from_url("https://example.com/image.jpg")
       # or from base64
       image = BamlImage.from_base64("image/jpeg", "...")
-      
+
       result = b.AnalyzeImage(image)
       ```
 
       ```typescript
       import { b, BamlImage } from './baml_client'
-      
+
       // Handle images
       const image = BamlImage.fromPath("./image.jpg")
       // or from URL
       const image = BamlImage.fromUrl("https://example.com/image.jpg")
-      
+
       const result = await b.AnalyzeImage(image)
       ```
     </MediaHandling>
 
     <ReactIntegration>
       For React/Next.js applications, BAML generates hooks:
-      
+
       ```typescript
       import { useMyFunction } from './baml_client/react'
-      
+
       function MyComponent() {
           const { data, loading, error, trigger } = useMyFunction()
-          
+
           const handleSubmit = async (inputData) => {
               await trigger(inputData)
           }
-          
+
           if (loading) return <div>Loading...</div>
           if (error) return <div>Error: {error.message}</div>
-          
+
           return (
               <div>
                   <button onClick={() => handleSubmit(someData)}>
@@ -300,16 +300,16 @@ alwaysApply: false
 
     <Collector>
       Use Collector to track token usage and other metrics:
-      
+
       ```python
       from baml_client import b
       from baml_client.collector import Collector
-      
+
       collector = Collector()
       result = b.MyFunction.with_options(
           collector=collector
       )(input_data)
-      
+
       # Access collected metrics
       print(f"Tokens used: {collector.total_tokens}")
       print(f"Cost: ${collector.total_cost}")
@@ -318,17 +318,17 @@ alwaysApply: false
 
     <DynamicTypes>
       Create types dynamically using TypeBuilder:
-      
+
       ```python
       from baml_client.type_builder import TypeBuilder
-      
+
       # Build a dynamic class
       tb = TypeBuilder()
       tb.class_("DynamicClass")
       tb.field("name", "string")
       tb.field("age", "int")
       dynamic_type = tb.build()
-      
+
       # Use with functions
       result = b.MyFunction.with_options(
           tb=tb
@@ -338,15 +338,15 @@ alwaysApply: false
 
     <ClientRegistry>
       Access and configure LLM clients at runtime:
-      
+
       ```python
       from baml_client.registry import get_client_registry
-      
+
       registry = get_client_registry()
-      
+
       # Get available clients
       clients = registry.list_clients()
-      
+
       # Override client configuration
       registry.set_primary("my_client", {
           "api_key": "new_key",

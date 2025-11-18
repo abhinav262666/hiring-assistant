@@ -1,8 +1,10 @@
 from mongoengine import Document, StringField
 
+
 class User(Document):
     name = StringField()
     email = StringField()
+
 
 print(dir(User._fields))
 

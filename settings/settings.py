@@ -1,17 +1,13 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional
-import os
 import logging
 import logging.config
 from pathlib import Path
 
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
 
     # Required environment variables
@@ -32,56 +28,54 @@ class Settings(BaseSettings):
 
         # Logging configuration
         log_config = {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'formatters': {
-                'detailed': {
-                    'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "detailed": {
+                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
                 },
-                'simple': {
-                    'format': '[%(levelname)s] %(message)s'
-                }
+                "simple": {"format": "[%(levelname)s] %(message)s"},
             },
-            'handlers': {
-                'console': {
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'simple',
-                    'level': self.log_level,
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "simple",
+                    "level": self.log_level,
                 },
-                'backend_file': {
-                    'class': 'logging.FileHandler',
-                    'filename': f'{self.log_dir}/backend.log',
-                    'formatter': 'detailed',
-                    'level': self.log_level,
+                "backend_file": {
+                    "class": "logging.FileHandler",
+                    "filename": f"{self.log_dir}/backend.log",
+                    "formatter": "detailed",
+                    "level": self.log_level,
                 },
-                'db_file': {
-                    'class': 'logging.FileHandler',
-                    'filename': f'{self.log_dir}/database.log',
-                    'formatter': 'detailed',
-                    'level': self.log_level,
+                "db_file": {
+                    "class": "logging.FileHandler",
+                    "filename": f"{self.log_dir}/database.log",
+                    "formatter": "detailed",
+                    "level": self.log_level,
                 },
-                'ai_file': {
-                    'class': 'logging.FileHandler',
-                    'filename': f'{self.log_dir}/ai_agents.log',
-                    'formatter': 'detailed',
-                    'level': self.log_level,
+                "ai_file": {
+                    "class": "logging.FileHandler",
+                    "filename": f"{self.log_dir}/ai_agents.log",
+                    "formatter": "detailed",
+                    "level": self.log_level,
                 },
             },
-            'loggers': {
-                'backend': {
-                    'handlers': ['console', 'backend_file'],
-                    'level': self.log_level,
-                    'propagate': False,
+            "loggers": {
+                "backend": {
+                    "handlers": ["console", "backend_file"],
+                    "level": self.log_level,
+                    "propagate": False,
                 },
-                'database': {
-                    'handlers': ['console', 'db_file'],
-                    'level': self.log_level,
-                    'propagate': False,
+                "database": {
+                    "handlers": ["console", "db_file"],
+                    "level": self.log_level,
+                    "propagate": False,
                 },
-                'ai_agents': {
-                    'handlers': ['console', 'ai_file'],
-                    'level': self.log_level,
-                    'propagate': False,
+                "ai_agents": {
+                    "handlers": ["console", "ai_file"],
+                    "level": self.log_level,
+                    "propagate": False,
                 },
             },
         }
@@ -90,9 +84,9 @@ class Settings(BaseSettings):
         logging.config.dictConfig(log_config)
 
         # Create logger instances
-        self.backend_logger = logging.getLogger('backend')
-        self.db_logger = logging.getLogger('database')
-        self.ai_logger = logging.getLogger('ai_agents')
+        self.backend_logger = logging.getLogger("backend")
+        self.db_logger = logging.getLogger("database")
+        self.ai_logger = logging.getLogger("ai_agents")
 
 
 # Create a global instance that validates on import
