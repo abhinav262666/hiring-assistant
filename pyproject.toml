@@ -1,0 +1,17 @@
+[project]
+name = "hiring-assistant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "baml-py>=0.213.0",
+    "mongoengine>=0.29.1",
+    "openai>=2.8.1",
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "pre-commit>=4.4.0",
+]
