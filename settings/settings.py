@@ -2,9 +2,9 @@ import logging
 import logging.config
 from pathlib import Path
 
+import mongoengine
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from qdrant_client import QdrantClient
-import mongoengine
 
 
 class Settings(BaseSettings):

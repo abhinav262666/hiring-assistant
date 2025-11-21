@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from .agent_endpoints.resume_extraction import router as resume_router
-from .crud_endpoints.org_user_auth import router as org_user_auth_router
 from .crud_endpoints.candidate_auth import router as candidate_auth_router
+from .crud_endpoints.org_user_auth import router as org_user_auth_router
 
 router = APIRouter()
 

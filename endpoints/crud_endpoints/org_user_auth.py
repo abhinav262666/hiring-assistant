@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, EmailStr
-from typing import Optional
 import logging
+from typing import Optional
 
-from models import OrgUser, Organization
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
+
+from models import Organization, OrgUser
 from utils.auth import AuthService, get_current_org_user
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,9 @@ async def register_org_user(request: OrgUserRegisterRequest):
         # Check if user already exists in this organization
         existing_user = OrgUser.objects(org=org, email=request.email).first()
         if existing_user:
-            raise HTTPException(status_code=400, detail="User already exists in this organization")
+            raise HTTPException(
+                status_code=400, detail="User already exists in this organization"
+            )
 
         # Create new user
         hashed_password = AuthService.get_password_hash(request.password)
@@ -58,7 +61,7 @@ async def register_org_user(request: OrgUserRegisterRequest):
             org=org,
             email=request.email,
             password_hash=hashed_password,
-            name=request.name
+            name=request.name,
         )
         user.save()
 
@@ -67,7 +70,7 @@ async def register_org_user(request: OrgUserRegisterRequest):
             "sub": str(user.id),
             "email": user.email,
             "name": user.name,
-            "org_id": str(user.org.id)
+            "org_id": str(user.org.id),
         }
         access_token = AuthService.create_access_token(token_data, user_type="org_user")
 
@@ -81,8 +84,8 @@ async def register_org_user(request: OrgUserRegisterRequest):
                 "name": user.name,
                 "org_id": str(user.org.id),
                 "org_name": org.name,
-                "user_type": "org_user"
-            }
+                "user_type": "org_user",
+            },
         )
 
     except HTTPException:
@@ -117,7 +120,7 @@ async def login_org_user(request: OrgUserLoginRequest):
             "sub": str(user.id),
             "email": user.email,
             "name": user.name,
-            "org_id": str(user.org.id)
+            "org_id": str(user.org.id),
         }
         access_token = AuthService.create_access_token(token_data, user_type="org_user")
 
@@ -131,8 +134,8 @@ async def login_org_user(request: OrgUserLoginRequest):
                 "name": user.name,
                 "org_id": str(user.org.id),
                 "org_name": user.org.name,
-                "user_type": "org_user"
-            }
+                "user_type": "org_user",
+            },
         )
 
     except HTTPException:
@@ -159,7 +162,7 @@ async def get_current_org_user_info(current_user: dict = Depends(get_current_org
             "org_id": str(user.org.id),
             "org_name": user.org.name,
             "user_type": "org_user",
-            "created_at": user.created_at.isoformat()
+            "created_at": user.created_at.isoformat(),
         }
 
     except HTTPException:

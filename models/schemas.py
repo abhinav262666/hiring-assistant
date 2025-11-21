@@ -19,8 +19,7 @@ from mongoengine import (
 from models.qdrant_mixin import QdrantMixin
 
 
-
-#Embedded Documents
+# Embedded Documents
 class ScreeningResult(EmbeddedDocument):
     verdict = StringField(
         choices=("pass", "fail", "manual_review"), default="manual_review"
@@ -47,9 +46,7 @@ class Organization(DynamicDocument, QdrantMixin):
     updated_at = DateTimeField(default=datetime.utcnow)
 
 
-
-
-#Documents
+# Documents
 class OrgUser(DynamicDocument):
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     email = EmailField(required=True)
@@ -68,7 +65,17 @@ class Candidate(DynamicDocument, QdrantMixin):
     qdrant_collection = "ha_candidates"
     dense_embed_fields = ["resume_ocr_content"]
     sparse_embed_fields = ["skills"]
-    payload_fields = ["email", "name", "phone", "resume_link", "location", "current_company", "experience_years", "skills", "status"]
+    payload_fields = [
+        "email",
+        "name",
+        "phone",
+        "resume_link",
+        "location",
+        "current_company",
+        "experience_years",
+        "skills",
+        "status",
+    ]
 
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     email = EmailField()
@@ -99,8 +106,22 @@ class JobListing(DynamicDocument, QdrantMixin):
     qdrant_collection = "ha_job_listings"
     dense_embed_fields = ["description"]
     sparse_embed_fields = ["required_skills", "nice_to_have"]
-    payload_fields = ["title", "description", "location", "employment_type", "salary_range", "experience_required_min", "experience_required_max", "required_skills", "nice_to_have", "created_by", "status", "published_at", "metadata"]
-    
+    payload_fields = [
+        "title",
+        "description",
+        "location",
+        "employment_type",
+        "salary_range",
+        "experience_required_min",
+        "experience_required_max",
+        "required_skills",
+        "nice_to_have",
+        "created_by",
+        "status",
+        "published_at",
+        "metadata",
+    ]
+
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     title = StringField(required=True)
     description = StringField()
@@ -137,7 +158,6 @@ class JobListing(DynamicDocument, QdrantMixin):
 
 class Application(DynamicDocument):
 
-
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     job = ReferenceField(JobListing, required=True, reverse_delete_rule=CASCADE)
     candidate = ReferenceField(Candidate, required=True, reverse_delete_rule=CASCADE)
@@ -162,9 +182,7 @@ class Application(DynamicDocument):
     }
 
 
-
-
-#Mappings
+# Mappings
 class CandidateListingMapping(DynamicDocument):
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     candidate = ReferenceField(Candidate, required=True, reverse_delete_rule=CASCADE)

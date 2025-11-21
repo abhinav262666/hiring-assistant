@@ -1,13 +1,11 @@
 # models/qdrant_mixin.py  (concise, ready to paste)
-from typing import Any, Dict, List, Optional
-import logging
 import time
-import uuid
 from random import random
+from typing import Any, Dict, List, Optional
 
+import qdrant_client.http.exceptions as qdr_ex
 from mongoengine import signals
 from qdrant_client.http import models as qm
-import qdrant_client.http.exceptions as qdr_ex
 
 from models.generate_embeddings import EmbeddingGenerator
 from settings import senv
@@ -23,6 +21,7 @@ _TRANSIENT = (
     ConnectionError,
     OSError,
 )
+
 
 def _with_retries(fn, *args, max_tries: int = 5, base_delay: float = 1.0, **kwargs):
     """
@@ -44,6 +43,7 @@ def _with_retries(fn, *args, max_tries: int = 5, base_delay: float = 1.0, **kwar
                 sleep_for,
             )
             time.sleep(sleep_for)
+
 
 class QdrantMixin:
     """
@@ -75,6 +75,7 @@ class QdrantMixin:
         WARNING: This can be expensive for large bulk updates.
         """
         from mongoengine.queryset import QuerySet
+
         original_update = QuerySet.update
 
         def patched_update(self, *args, **kwargs):
@@ -89,11 +90,14 @@ class QdrantMixin:
     @classmethod
     def _get_affected_ids_before_update(cls, queryset):
         """Get IDs of documents that will be affected by update."""
-        if not (hasattr(queryset, '_document_class') and issubclass(queryset._document_class, QdrantMixin)):
+        if not (
+            hasattr(queryset, "_document_class")
+            and issubclass(queryset._document_class, QdrantMixin)
+        ):
             return []
 
         try:
-            affected_docs = list(queryset.only('id'))
+            affected_docs = list(queryset.only("id"))
             return [str(doc.id) for doc in affected_docs]
         except Exception:
             return []
@@ -128,9 +132,10 @@ class QdrantMixin:
             try:
                 document.delete_data_point()
             except Exception as e:
-                logger.exception("Failed to delete document from Qdrant on delete: %s", e)
+                logger.exception(
+                    "Failed to delete document from Qdrant on delete: %s", e
+                )
 
- 
     @property
     def embed_gen(self):
         if not hasattr(self, "_embed_gen"):
@@ -141,7 +146,9 @@ class QdrantMixin:
     def get_qdrant_client(self):
         """Return the global Qdrant client from settings (raises if not initialized)."""
         if getattr(senv, "qdrant_client", None) is None:
-            raise RuntimeError("Qdrant client not initialized. Initialize senv.qdrant_client on startup.")
+            raise RuntimeError(
+                "Qdrant client not initialized. Initialize senv.qdrant_client on startup."
+            )
         return senv.qdrant_client
 
     # -------------------- ID / collection helpers --------------------
@@ -153,7 +160,9 @@ class QdrantMixin:
 
     @classmethod
     def _collection_name_for_class(cls) -> str:
-        return getattr(cls, "qdrant_collection", None) or getattr(cls, "meta", {}).get("collection", cls.__name__.lower()) 
+        return getattr(cls, "qdrant_collection", None) or getattr(cls, "meta", {}).get(
+            "collection", cls.__name__.lower()
+        )
 
     def _collection_name(self) -> str:
         # instance-level override: allow instance to choose per-org collections if desired
@@ -177,7 +186,9 @@ class QdrantMixin:
         fields = getattr(self, "payload_fields", None)
         # default: include a small set if user did not provide payload_fields
         if not fields:
-            fields = [k for k in getattr(self, "_fields", {}).keys() if k not in ("id",)]
+            fields = [
+                k for k in getattr(self, "_fields", {}).keys() if k not in ("id",)
+            ]
         for f in fields:
             try:
                 v = getattr(self, f, None)
@@ -190,7 +201,9 @@ class QdrantMixin:
                     payload[f] = v
             except Exception:
                 # best-effort; avoid failing the whole payload build
-                logger.debug("Failed to read field %s for payload on %s", f, type(self).__name__)
+                logger.debug(
+                    "Failed to read field %s for payload on %s", f, type(self).__name__
+                )
                 payload[f] = None
         # always include doc id and collection marker
         payload["_id"] = self._point_id()
@@ -289,7 +302,10 @@ class QdrantMixin:
                         )
                     },
                 )
-                logger.debug("Created qdrant collection %s with dense and sparse vector configs", coll)
+                logger.debug(
+                    "Created qdrant collection %s with dense and sparse vector configs",
+                    coll,
+                )
         except Exception as e:
             # non-fatal: log and continue (collection may already exist or creation failed)
             logger.exception("Failed to ensure collection %s: %s", coll, e)
@@ -310,7 +326,11 @@ class QdrantMixin:
 
         # at least one vector is required by Qdrant point (dense or sparse)
         if dense_vec is None and sparse_vec is None:
-            logger.debug("No dense or sparse vector for %s; skipping upsert for id %s", coll, self._point_id())
+            logger.debug(
+                "No dense or sparse vector for %s; skipping upsert for id %s",
+                coll,
+                self._point_id(),
+            )
             return False
 
         # ensure collection exists (best-effort)
@@ -336,7 +356,12 @@ class QdrantMixin:
             logger.debug("Upserted point %s into collection %s", self._point_id(), coll)
             return True
         except Exception as e:
-            logger.exception("Failed to upsert point %s into qdrant collection %s: %s", self._point_id(), coll, e)
+            logger.exception(
+                "Failed to upsert point %s into qdrant collection %s: %s",
+                self._point_id(),
+                coll,
+                e,
+            )
             return False
 
     def delete_data_point(self) -> bool:
@@ -350,7 +375,12 @@ class QdrantMixin:
             logger.debug("Deleted point %s from collection %s", self._point_id(), coll)
             return True
         except Exception as e:
-            logger.exception("Failed to delete point %s from qdrant collection %s: %s", self._point_id(), coll, e)
+            logger.exception(
+                "Failed to delete point %s from qdrant collection %s: %s",
+                self._point_id(),
+                coll,
+                e,
+            )
             return False
 
     # -------------------- Search functionality --------------------
@@ -387,9 +417,7 @@ class QdrantMixin:
         if org_id:
             # Filter by organization ID - stored in payload as org field
             filter_conditions.append(
-                qm.FieldCondition(
-                    key="org", match=qm.MatchValue(value=org_id)
-                )
+                qm.FieldCondition(key="org", match=qm.MatchValue(value=org_id))
             )
 
         query_filter = qm.Filter(must=filter_conditions) if filter_conditions else None
@@ -408,7 +436,7 @@ class QdrantMixin:
                 with_payload=True,
                 limit=limit,
             )
-            return res.points if res and hasattr(res, 'points') else []
+            return res.points if res and hasattr(res, "points") else []
         except Exception as e:
             logger.exception("Failed to search qdrant collection %s: %s", coll, e)
             return []
@@ -441,7 +469,9 @@ class QdrantMixin:
         similarity_results.sort(key=lambda x: x["similarity_score"], reverse=True)
         return similarity_results
 
-    def _get_source_vector(self, client, coll: str, source_mongo_id: str) -> Optional[Dict]:
+    def _get_source_vector(
+        self, client, coll: str, source_mongo_id: str
+    ) -> Optional[Dict]:
         """Retrieve source document vector from Qdrant."""
         try:
             # Use retrieve to get specific points by ID
@@ -453,7 +483,9 @@ class QdrantMixin:
             )
 
             if not source_points or len(source_points) == 0:
-                logger.warning("Source document %s not found in Qdrant", source_mongo_id)
+                logger.warning(
+                    "Source document %s not found in Qdrant", source_mongo_id
+                )
                 return None
 
             point = source_points[0]
@@ -463,10 +495,14 @@ class QdrantMixin:
             return vector
 
         except Exception as e:
-            logger.error("Failed to retrieve source document %s: %s", source_mongo_id, e)
+            logger.error(
+                "Failed to retrieve source document %s: %s", source_mongo_id, e
+            )
             return None
 
-    def _get_target_points(self, client, coll: str, target_mongo_ids: List[str]) -> List:
+    def _get_target_points(
+        self, client, coll: str, target_mongo_ids: List[str]
+    ) -> List:
         """Retrieve target document points from Qdrant."""
         try:
             # Use retrieve to get specific points by ID
@@ -486,10 +522,7 @@ class QdrantMixin:
             return []
 
     def _compute_similarities(
-        self,
-        source_vector: Dict,
-        target_points: List,
-        org_id: Optional[str]
+        self, source_vector: Dict, target_points: List, org_id: Optional[str]
     ) -> List[Dict[str, Any]]:
         """Compute similarity scores for target points."""
         similarity_results = []
@@ -505,7 +538,9 @@ class QdrantMixin:
             if not self._passes_filters(point.payload, org_id):
                 continue
 
-            similarity_score = self._calculate_point_similarity(source_vector, point.vector)
+            similarity_score = self._calculate_point_similarity(
+                source_vector, point.vector
+            )
             if similarity_score is not None:
                 similarity_results.append(
                     {"mongo_id": point_mongo_id, "similarity_score": similarity_score}
@@ -519,7 +554,9 @@ class QdrantMixin:
             return False
         return True
 
-    def _calculate_point_similarity(self, source_vector: Dict, target_vector: Dict) -> Optional[float]:
+    def _calculate_point_similarity(
+        self, source_vector: Dict, target_vector: Dict
+    ) -> Optional[float]:
         """Calculate similarity between source and target vectors."""
         try:
             source_dense = source_vector.get("text-dense", [])
@@ -556,8 +593,8 @@ class QdrantMixin:
             dot_product = sum(a * b for a, b in zip(vec1, vec2))
 
             # Calculate magnitudes
-            norm1 = (sum(x ** 2 for x in vec1)) ** 0.5
-            norm2 = (sum(x ** 2 for x in vec2)) ** 0.5
+            norm1 = (sum(x**2 for x in vec1)) ** 0.5
+            norm2 = (sum(x**2 for x in vec2)) ** 0.5
 
             # Avoid division by zero
             if norm1 == 0 or norm2 == 0:
@@ -568,5 +605,3 @@ class QdrantMixin:
         except Exception as e:
             logger.error("Failed to calculate cosine similarity: %s", e)
             return 0.0
-
-

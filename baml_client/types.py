@@ -11,31 +11,33 @@
 # baml-cli is available with the baml package.
 
 import typing
+
 import typing_extensions
-from enum import Enum
+from pydantic import BaseModel
 
+CheckT = typing_extensions.TypeVar("CheckT")
+CheckName = typing_extensions.TypeVar("CheckName", bound=str)
 
-from pydantic import BaseModel, ConfigDict
-
-
-import baml_py
-
-CheckT = typing_extensions.TypeVar('CheckT')
-CheckName = typing_extensions.TypeVar('CheckName', bound=str)
 
 class Check(BaseModel):
     name: str
     expression: str
     status: str
+
+
 class Checked(BaseModel, typing.Generic[CheckT, CheckName]):
     value: CheckT
     checks: typing.Dict[CheckName, Check]
 
+
 def get_checks(checks: typing.Dict[CheckName, Check]) -> typing.List[Check]:
     return list(checks.values())
 
+
 def all_succeeded(checks: typing.Dict[CheckName, Check]) -> bool:
     return all(check.status == "succeeded" for check in get_checks(checks))
+
+
 # #########################################################################
 # Generated enums (0)
 # #########################################################################
@@ -44,6 +46,7 @@ def all_succeeded(checks: typing.Dict[CheckName, Check]) -> bool:
 # Generated classes (1)
 # #########################################################################
 
+
 class Resume(BaseModel):
     name: str
     email: typing.Optional[str] = None
@@ -51,6 +54,7 @@ class Resume(BaseModel):
     location: typing.Optional[str] = None
     current_company: typing.Optional[str] = None
     experience_years: typing.Optional[float] = None
+
 
 # #########################################################################
 # Generated type aliases (0)

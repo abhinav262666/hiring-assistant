@@ -1,6 +1,4 @@
 import io
-from typing import Optional
-import logging
 
 try:
     from PyPDF2 import PdfReader
@@ -33,11 +31,11 @@ class OCRService:
         if not filename:
             raise ValueError("Filename is required to determine file type")
 
-        file_extension = filename.split('.')[-1].lower()
+        file_extension = filename.split(".")[-1].lower()
 
-        if file_extension == 'pdf':
+        if file_extension == "pdf":
             return OCRService._extract_text_from_pdf(file_content)
-        elif file_extension in ['txt', 'md']:
+        elif file_extension in ["txt", "md"]:
             return OCRService._extract_text_from_text(file_content)
         else:
             raise ValueError(f"Unsupported file type: {file_extension}")
@@ -46,7 +44,9 @@ class OCRService:
     def _extract_text_from_pdf(file_content: bytes) -> str:
         """Extract text from PDF file."""
         if PdfReader is None:
-            raise ValueError("PyPDF2 is not installed. Please install it to process PDF files.")
+            raise ValueError(
+                "PyPDF2 is not installed. Please install it to process PDF files."
+            )
 
         try:
             pdf_file = io.BytesIO(file_content)
@@ -58,12 +58,14 @@ class OCRService:
                 if text.strip():
                     text_content.append(text.strip())
 
-            extracted_text = '\n\n'.join(text_content)
+            extracted_text = "\n\n".join(text_content)
 
             if not extracted_text.strip():
                 raise ValueError("No text could be extracted from the PDF")
 
-            logger.info(f"Successfully extracted {len(extracted_text)} characters from PDF")
+            logger.info(
+                f"Successfully extracted {len(extracted_text)} characters from PDF"
+            )
             return extracted_text
 
         except Exception as e:
@@ -74,7 +76,7 @@ class OCRService:
     def _extract_text_from_text(file_content: bytes) -> str:
         """Extract text from plain text file."""
         try:
-            text = file_content.decode('utf-8')
+            text = file_content.decode("utf-8")
             logger.info(f"Successfully extracted {len(text)} characters from text file")
             return text
         except UnicodeDecodeError as e:
@@ -87,6 +89,6 @@ class OCRService:
         if not filename:
             return False
 
-        supported_extensions = {'pdf', 'txt', 'md'}
-        file_extension = filename.split('.')[-1].lower()
+        supported_extensions = {"pdf", "txt", "md"}
+        file_extension = filename.split(".")[-1].lower()
         return file_extension in supported_extensions

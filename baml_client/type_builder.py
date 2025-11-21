@@ -11,24 +11,35 @@
 # baml-cli is available with the baml package.
 
 import typing
-from baml_py import type_builder
-from baml_py import baml_py
+
+from baml_py import baml_py, type_builder
+
 # These are exports, not used here, hence the linter is disabled
-from baml_py.baml_py import FieldType, EnumValueBuilder, EnumBuilder, ClassBuilder # noqa: F401 # pylint: disable=unused-import
+from baml_py.baml_py import (  # noqa: F401 # pylint: disable=unused-import
+    ClassBuilder,
+    EnumBuilder,
+    EnumValueBuilder,
+    FieldType,
+)
+
 from .globals import DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
+
 
 class TypeBuilder(type_builder.TypeBuilder):
     def __init__(self):
-        super().__init__(classes=set(
-          ["Resume",]
-        ), enums=set(
-          []
-        ), runtime=DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME)
+        super().__init__(
+            classes=set(
+                [
+                    "Resume",
+                ]
+            ),
+            enums=set([]),
+            runtime=DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME,
+        )
 
     # #########################################################################
     # Generated enums 0
     # #########################################################################
-
 
     # #########################################################################
     # Generated classes 1
@@ -37,7 +48,6 @@ class TypeBuilder(type_builder.TypeBuilder):
     @property
     def Resume(self) -> "ResumeViewer":
         return ResumeViewer(self)
-
 
 
 # #########################################################################
@@ -49,11 +59,21 @@ class TypeBuilder(type_builder.TypeBuilder):
 # Generated classes 1
 # #########################################################################
 
+
 class ResumeAst:
     def __init__(self, tb: type_builder.TypeBuilder):
-        _tb = tb._tb # type: ignore (we know how to use this private attribute)
+        _tb = tb._tb  # type: ignore (we know how to use this private attribute)
         self._bldr = _tb.class_("Resume")
-        self._properties: typing.Set[str] = set([  "name",  "email",  "phone",  "location",  "current_company",  "experience_years",  ])
+        self._properties: typing.Set[str] = set(
+            [
+                "name",
+                "email",
+                "phone",
+                "location",
+                "current_company",
+                "experience_years",
+            ]
+        )
         self._props = ResumeProperties(self._bldr, self._properties)
 
     def type(self) -> baml_py.FieldType:
@@ -68,42 +88,42 @@ class ResumeViewer(ResumeAst):
     def __init__(self, tb: type_builder.TypeBuilder):
         super().__init__(tb)
 
-    
-    def list_properties(self) -> typing.List[typing.Tuple[str, type_builder.ClassPropertyViewer]]:
-        return [(name, type_builder.ClassPropertyViewer(self._bldr.property(name))) for name in self._properties]
-    
+    def list_properties(
+        self,
+    ) -> typing.List[typing.Tuple[str, type_builder.ClassPropertyViewer]]:
+        return [
+            (name, type_builder.ClassPropertyViewer(self._bldr.property(name)))
+            for name in self._properties
+        ]
 
 
 class ResumeProperties:
     def __init__(self, bldr: baml_py.ClassBuilder, properties: typing.Set[str]):
         self.__bldr = bldr
-        self.__properties = properties # type: ignore (we know how to use this private attribute) # noqa: F821
+        self.__properties = properties  # type: ignore (we know how to use this private attribute) # noqa: F821
 
-    
-    
     @property
     def name(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("name"))
-    
+
     @property
     def email(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("email"))
-    
+
     @property
     def phone(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("phone"))
-    
+
     @property
     def location(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("location"))
-    
+
     @property
     def current_company(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("current_company"))
-    
+
     @property
     def experience_years(self) -> type_builder.ClassPropertyViewer:
-        return type_builder.ClassPropertyViewer(self.__bldr.property("experience_years"))
-    
-    
-
+        return type_builder.ClassPropertyViewer(
+            self.__bldr.property("experience_years")
+        )

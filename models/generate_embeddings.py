@@ -1,19 +1,20 @@
-from typing import List, Dict
-from openai import OpenAI
-from settings import senv
-from qdrant_client.http import models as qm
+from typing import List
+
 import litellm
+from openai import OpenAI
+from qdrant_client.http import models as qm
 
 from settings import senv
 
 logger = senv.backend_logger
+
 
 class EmbeddingGenerator:
     def __init__(self) -> None:
         self.client = OpenAI()
 
     def generate_dense_vector(self, text: str) -> List:
-        if not text :
+        if not text:
             raise ValueError("text is required")
         try:
             response = self.client.embeddings.create(
@@ -24,8 +25,8 @@ class EmbeddingGenerator:
             logger.error("Dense embedding failed: %s", e)
             return []
 
-    def generate_sparse_vector(self, text: str) ->  qm.SparseVector | dict:
-        if not text :
+    def generate_sparse_vector(self, text: str) -> qm.SparseVector | dict:
+        if not text:
             logger.error("text is required")
             return {}
         try:
@@ -43,4 +44,3 @@ class EmbeddingGenerator:
         except Exception as e:
             logger.error("Sparse embedding failed: %s", e)
             return {}
-
