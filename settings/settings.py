@@ -3,6 +3,8 @@ import logging.config
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from qdrant_client import QdrantClient
+import mongoengine
 
 
 class Settings(BaseSettings):
@@ -16,6 +18,10 @@ class Settings(BaseSettings):
     mistral_api_key: str
     mongo_url: str
     qdrant_url: str
+    embedding_model: str
+    DENSE_VECTOR_SIZE: str
+    litellm_proxy_url: str
+    litellm_proxy_api_key: str
 
     # Logging configuration
     log_level: str = "INFO"
@@ -87,6 +93,28 @@ class Settings(BaseSettings):
         self.backend_logger = logging.getLogger("backend")
         self.db_logger = logging.getLogger("database")
         self.ai_logger = logging.getLogger("ai_agents")
+
+        # Initialize database clients as None (will be set during app startup)
+        self.mongo_client = None
+        self.qdrant_client = None
+
+    def initialize_databases(self):
+        """Initialize MongoDB and Qdrant database connections"""
+        try:
+            # Initialize MongoEngine
+            mongoengine.connect(host=self.mongo_url)
+            self.mongo_client = mongoengine.connection.get_connection()
+            self.db_logger.info("✅ MongoDB connection established successfully")
+
+            # Initialize Qdrant client
+            self.qdrant_client = QdrantClient(url=self.qdrant_url)
+            # Test connection
+            self.qdrant_client.get_collections()
+            self.db_logger.info("✅ Qdrant connection established successfully")
+
+        except Exception as e:
+            self.db_logger.error(f"❌ Database initialization failed: {e}")
+            raise
 
 
 # Create a global instance that validates on import

@@ -17,6 +17,10 @@ async def lifespan(app: FastAPI):
     senv.setup_loggers()
     print("📝 Loggers initialized successfully")
 
+    # Initialize database connections
+    senv.initialize_databases()
+    print("🗄️ Database connections established successfully")
+
     yield
 
     # Shutdown logic

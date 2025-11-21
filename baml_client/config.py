@@ -12,15 +12,16 @@
 
 from __future__ import annotations
 
-import functools
 import os
-import typing
 import warnings
-
 import typing_extensions
-from baml_py.logging import get_log_level as baml_get_log_level
-from baml_py.logging import set_log_level as baml_set_log_level
+import typing
+import functools
 
+from baml_py.logging import (
+    get_log_level as baml_get_log_level,
+    set_log_level as baml_set_log_level,
+)
 from .globals import reset_baml_env_vars
 
 rT = typing_extensions.TypeVar("rT")  # return type
