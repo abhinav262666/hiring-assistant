@@ -23,6 +23,17 @@ class Settings(BaseSettings):
     litellm_proxy_url: str
     litellm_proxy_api_key: str
 
+    # Optional environment variables
+    jwt_secret_key: str = "random-secret-key"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
+
+    # AWS S3 Configuration (optional)
+    aws_access_key_id: str = ""
+    aws_secret_access_key: str = ""
+    aws_region: str = "us-east-1"
+    s3_bucket_name: str = ""
+
     # Logging configuration
     log_level: str = "INFO"
     log_dir: str = "logs"

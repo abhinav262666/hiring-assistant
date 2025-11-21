@@ -72,6 +72,7 @@ class Candidate(DynamicDocument, QdrantMixin):
 
     org = ReferenceField(Organization, required=True, reverse_delete_rule=CASCADE)
     email = EmailField()
+    password_hash = StringField()  # For candidate authentication
     name = StringField()
     phone = StringField()
     resume_link = URLField()
