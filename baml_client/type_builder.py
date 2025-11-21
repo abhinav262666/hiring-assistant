@@ -53,7 +53,7 @@ class ResumeAst:
     def __init__(self, tb: type_builder.TypeBuilder):
         _tb = tb._tb # type: ignore (we know how to use this private attribute)
         self._bldr = _tb.class_("Resume")
-        self._properties: typing.Set[str] = set([  "name",  "email",  "experience",  "skills",  ])
+        self._properties: typing.Set[str] = set([  "name",  "email",  "phone",  "location",  "current_company",  "experience_years",  ])
         self._props = ResumeProperties(self._bldr, self._properties)
 
     def type(self) -> baml_py.FieldType:
@@ -90,12 +90,20 @@ class ResumeProperties:
         return type_builder.ClassPropertyViewer(self.__bldr.property("email"))
     
     @property
-    def experience(self) -> type_builder.ClassPropertyViewer:
-        return type_builder.ClassPropertyViewer(self.__bldr.property("experience"))
+    def phone(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("phone"))
     
     @property
-    def skills(self) -> type_builder.ClassPropertyViewer:
-        return type_builder.ClassPropertyViewer(self.__bldr.property("skills"))
+    def location(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("location"))
+    
+    @property
+    def current_company(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("current_company"))
+    
+    @property
+    def experience_years(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("experience_years"))
     
     
 

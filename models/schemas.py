@@ -174,7 +174,12 @@ class CandidateListingMapping(DynamicDocument):
     interview_score = FloatField()
 
 
-# Register Qdrant signals for models that use QdrantMixin
-Organization.register_signals()
-Candidate.register_signals()
-JobListing.register_signals()
+# Qdrant setup - add to app startup or bottom of models file
+from models.qdrant_mixin import QdrantMixin
+
+# idempotent registration
+for cls in (Organization, Candidate, JobListing):  # add others that inherit QdrantMixin
+    cls.register_signals()
+
+# enable QuerySet.update patching (call once)
+QdrantMixin.patch_queryset_update()

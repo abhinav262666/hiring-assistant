@@ -46,9 +46,11 @@ def all_succeeded(checks: typing.Dict[CheckName, Check]) -> bool:
 
 class Resume(BaseModel):
     name: str
-    email: str
-    experience: typing.List[str]
-    skills: typing.List[str]
+    email: typing.Optional[str] = None
+    phone: typing.Optional[str] = None
+    location: typing.Optional[str] = None
+    current_company: typing.Optional[str] = None
+    experience_years: typing.Optional[float] = None
 
 # #########################################################################
 # Generated type aliases (0)

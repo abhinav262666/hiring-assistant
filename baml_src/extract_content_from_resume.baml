@@ -1,8 +1,10 @@
 class Resume {
   name string
-  email string
-  experience string[]
-  skills string[]
+  email string?
+  phone string?
+  location string?
+  current_company string?
+  experience_years float?
 }
 
 

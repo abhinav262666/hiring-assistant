@@ -29,8 +29,10 @@ class StreamState(BaseModel, typing.Generic[StreamStateValueT]):
 class Resume(BaseModel):
     name: typing.Optional[str] = None
     email: typing.Optional[str] = None
-    experience: typing.List[str]
-    skills: typing.List[str]
+    phone: typing.Optional[str] = None
+    location: typing.Optional[str] = None
+    current_company: typing.Optional[str] = None
+    experience_years: typing.Optional[float] = None
 
 # #########################################################################
 # Generated type aliases (0)
